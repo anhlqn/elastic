@@ -99,7 +99,7 @@ bootstrap.mlockall: true
 network.bind_host: 0.0.0.0
 http.port: 9200
 
-network.publish_host: 172.30.29.239
+network.publish_host: 192.168.1.11
 transport.tcp.port: 9300
 
 # Allow ElasticHQ to connect
