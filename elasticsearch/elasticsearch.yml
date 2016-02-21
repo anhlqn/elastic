@@ -16,7 +16,7 @@
 #
 # cluster.name: my-application
 #
-cluster.name: IT-ES1
+cluster.name: ES1
 
 # Allows to perform a check to prevent allocation of multiple instances of the same shard on 
 # a single host, based on host name and host address. 
@@ -35,7 +35,7 @@ cluster.name: IT-ES1
 #
 # node.rack: r1
 #
-node.name: "IT-ES1-MD1"
+node.name: "ES1-MD1"
 
 node.master: true
 node.data: true
@@ -68,7 +68,7 @@ indices.store.throttle.max_bytes_per_sec : 100mb
 #
 # path.logs: /path/to/logs
 #
-path.data: D:/ESData/IT-ES1-MD1
+path.data: C:/ESData/ES1-MD1
 
 # ----------------------------------- Memory -----------------------------------
 #
