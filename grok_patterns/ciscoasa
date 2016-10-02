@@ -1,0 +1,117 @@
+#== Cisco ASA ==
+HOSTNAME \b(?:[_0-9A-Za-z][_0-9A-Za-z-]{0,62})(?:\.(?:[_0-9A-Za-z][_0-9A-Za-z-]{0,62}))*(\.?|\b)
+CTIMESTAMP %{YEAR}-%{MONTHNUM2}-%{MONTHDAY}[T ]%{HOUR}:?%{MINUTE}(?::?%{SECOND})(?:\.[0-9]+)?%{ISO8601_TIMEZONE}
+CISCO_TAGGED %{CTIMESTAMP}( %{SYSLOGHOST:host})? %{CISCO_TAG:ciscotag}:
+CISCO_ASA_TAGGED %{CTIMESTAMP}( %{SYSLOGHOST:host})? %{CISCO_ASA_TAG:ciscotag}:
+CISCO_CLASS [0-9]{3}
+CISCO_STRUC [A-Z0-9_]+
+CISCO_TAG %{CISCO_STRUC:cisco_facility}-%{INT:cisco_severity}-%{CISCO_STRUC:cisco_mnemonic}|WLC[0-9]+
+CISCO_ASA_TAG %[A-Z0-9_]+-%{INT:cisco_severity}-%{CISCO_CLASS:cisco_class}[0-9]{3}
+# Common Particles
+CISCO_ASA_ACTION Built|Teardown|Deny|Denied|denied|requested|permitted|received|denied by ACL|discarded|est-allowed|Dropping|dropping|created|deleted|SENDING|RECEIVED|monitored|dropped|terminated|Rejected|Received
+CISCO_ASA_REASON AAA failure|Duplicate TCP SYN|TCP Reset\-O|Failed to locate egress interface|Invalid transport field|No matching connection|DNS Response|DNS Query|request collision|(?:%{WORD}\s*)*
+CISCO_ASA_DIRECTION Inbound|inbound|Outbound|outbound
+CISCO_ASA_INTERVAL first hit|%{INT}-second interval
+CISCO_ASA_XLATE_TYPE static|dynamic
+# ASA-2-106001
+CISCOASA106001 %{CISCO_ASA_DIRECTION:direction} %{WORD:protocol} connection %{CISCO_ASA_ACTION:action} from %{IP:src_ip}/%{INT:src_port} to %{IP:dst_ip}/%{INT:dst_port} flags %{GREEDYDATA:tcp_flags} on interface %{GREEDYDATA:interface}
+# ASA-2-106006, ASA-2-106007, ASA-2-106010
+CISCOASA106006_106007_106010 %{CISCO_ASA_ACTION:action} %{CISCO_ASA_DIRECTION:direction} %{WORD:protocol} (?:from|src) %{IP:src_ip}/%{INT:src_port}(\(%{DATA:src_user}\))? (?:to|dst) %{IP:dst_ip}/%{INT:dst_port}(\(%{DATA:dst_user}\))? (?:on interface %{DATA:interface}|due to %{CISCO_ASA_REASON:reason})
+# ASA-3-106014
+CISCOASA106014 %{CISCO_ASA_ACTION:action} %{CISCO_ASA_DIRECTION:direction} %{WORD:protocol} src %{DATA:src_interface}:%{IP:src_ip}(\(%{DATA:src_user}\))? dst %{DATA:dst_interface}:%{IP:dst_ip}(\(%{DATA:dst_user}\))? \(type %{INT:icmp_type}, code %{INT:icmp_code}\)
+# ASA-6-106015
+CISCOASA106015 %{CISCO_ASA_ACTION:action} %{WORD:protocol} \(%{DATA:policy_id}\) from %{IPORHOST:src_ip}/%{INT:src_port} to %{IPORHOST:dst_ip}/%{INT:dst_port} flags %{DATA:tcp_flags}  on interface %{GREEDYDATA:interface}
+# ASA-1-106021
+CISCOASA106021 %{CISCO_ASA_ACTION:action} %{WORD:protocol} reverse path check from %{IP:src_ip} to %{IP:dst_ip} on interface %{GREEDYDATA:interface}
+# ASA-4-106023
+CISCOASA106023 %{CISCO_ASA_ACTION:action} %{WORD:protocol} src %{DATA:src_interface}:%{IPORHOST:src_ip}(/%{INT:src_port})?(\(%{DATA:src_user}\))? dst %{DATA:dst_interface}:%{IPORHOST:dst_ip}(/%{INT:dst_port})?(\(%{DATA:dst_user}\))?( \(type %{INT:icmp_type}, code %{INT:icmp_code}\))? by access-group "%{DATA:policy_id}" \[%{DATA:hashcode1}, %{DATA:hashcode2}\]
+# ASA-5-106100
+CISCOASA106100 access-list %{WORD:policy_id} %{CISCO_ASA_ACTION:action} %{WORD:protocol} %{DATA:src_interface}/%{IP:src_ip}\(%{INT:src_port}\)(\(%{DATA:src_user}\))? -> %{DATA:dst_interface}/%{IP:dst_ip}\(%{INT:dst_port}\)(\(%{DATA:dst_user}\))? hit-cnt %{INT:hit_count} %{CISCO_ASA_INTERVAL:interval} \[%{DATA:hashcode1}, %{DATA:hashcode2}\]
+# ASA-6-110002
+CISCOASA110002 %{CISCO_ASA_REASON:reason} for %{WORD:protocol} from %{DATA:src_interface}:%{IPORHOST:src_ip}/%{INT:src_port} to %{IP:dst_ip}/%{INT:dst_port}
+# ASA-5-111008
+CISCOASA111008 User '%{DATA:user}' executed the '%{GREEDYDATA:cmd}' command\.
+# ASA-7-111009
+CISCOASA111009 User '%{DATA:user}' executed cmd: %{GREEDYDATA:cmd}
+# ASA-5-111010
+CISCOASA111010 User '%{DATA:user}', running '%{WORD:service}' from IP %{IPORHOST:src_ip}, executed '%{GREEDYDATA:cmd}'
+# ASA-6-113004
+CISCOASA113004 AAA user authentication Successful : server = \s*%{IPORHOST:server} : user = %{DATA:user}
+# ASA-6-113005
+CISCOASA113005 AAA user authentication %{CISCO_ASA_ACTION:action} : reason = %{CISCO_ASA_REASON} : server = %{IPORHOST:server} : user = %{DATA:user} : user IP = %{IP:src_ip}
+# ASA-6-302004
+CISCOASA302004 Pre-allocate %{DATA:protocol} backconnection for faddr %{IPORHOST:orig_src_ip}(?:/%{INT:orig_src_port})? to laddr %{IPORHOST:orig_src_ip}(?:/%{INT:orig_src_port})?
+# ASA-6-302010
+CISCOASA302010 %{INT:connection_count} in use, %{INT:connection_count_max} most used
+# ASA-6-302013, ASA-6-302014, ASA-6-302015, ASA-6-302016
+CISCOASA302013_302014_302015_302016 %{CISCO_ASA_ACTION:action}(?: %{CISCO_ASA_DIRECTION:direction})? %{WORD:protocol} connection %{INT:connection_id} for %{DATA:src_interface}:%{IPORHOST:src_ip}/%{INT:src_port}( \(%{IPORHOST:src_mapped_ip}/%{INT:src_mapped_port}\))?(\(%{DATA:src_user}\))? to %{DATA:dst_interface}:%{IPORHOST:dst_ip}/%{INT:dst_port}( \(%{IPORHOST:dst_mapped_ip}/%{INT:dst_mapped_port}\))?(\(%{DATA:dst_user}\))?( duration %{TIME:duration} bytes %{INT:bytes})?(?: %{CISCO_ASA_REASON:reason})?( \(%{DATA:user}\))?
+# ASA-6-302020, ASA-6-302021
+CISCOASA302020_302021 %{CISCO_ASA_ACTION:action}(?: %{CISCO_ASA_DIRECTION:direction})? %{WORD:protocol} connection for faddr %{IPORHOST:dst_ip}/%{INT:icmp_seq_num}(?:\(%{DATA:user}\))? gaddr %{IPORHOST:src_xlated_ip}/%{INT:icmp_code_xlated} laddr %{IPORHOST:src_ip}/%{INT:icmp_code}( \(%{DATA:user}\))?
+# ASA-3-305006
+CISCOASA305006 regular translation creation failed for %{WORD:protocol} src %{DATA:src_interface}:%{IPORHOST:src_ip}(/%{INT:src_port})? dst %{DATA:dst_interface}:%{IPORHOST:dst_ip}(/%{INT:dst_port})?(?: \(type %{INT:icmp_type}, code %{INT:icmp_code}\))?
+# ASA-6-305011
+CISCOASA305011 %{CISCO_ASA_ACTION:action} %{CISCO_ASA_XLATE_TYPE:xlate_type} %{WORD:protocol} translation from %{DATA:src_interface}:%{IPORHOST:src_ip}(/%{INT:src_port})?(\(%{DATA:src_user}\))? to %{DATA:src_xlated_interface}:%{IPORHOST:src_xlated_ip}/%{DATA:src_xlated_port}
+# ASA-5-305013
+CISCOASA305013 Asymmetric NAT rules matched for forward and reverse flows; Connection for %{WORD:protocol} src %{DATA:src_interface}:%{IPORHOST:src_ip}(/%{INT:src_port})? dst %{DATA:dst_interface}:%{IPORHOST:dst_ip}(/%{INT:dst_port})? %{CISCO_ASA_ACTION:action} due to NAT reverse path failure
+# ASA-3-313001, ASA-3-313004, ASA-3-313008
+CISCOASA313001_313004_313008 %{CISCO_ASA_ACTION:action} %{WORD:protocol} type=%{INT:icmp_type}, code=%{INT:icmp_code} from %{IP:src_ip} on interface %{DATA:interface}( to %{IP:dst_ip})?
+# ASA-4-313005
+CISCOASA313005 %{CISCO_ASA_REASON:reason} for %{WORD:protocol} error message: %{WORD:err_protocol} src %{DATA:err_src_interface}:%{IPORHOST:err_src_ip}(\(%{DATA:err_src_user}\))? dst %{DATA:err_dst_interface}:%{IPORHOST:err_dst_ip}(\(%{DATA:err_dst_user}\))? \(type %{INT:err_icmp_type}, code %{INT:err_icmp_code}\) on %{DATA:interface} interface\.  Original IP payload: %{WORD:protocol} src %{IPORHOST:orig_src_ip}/%{INT:orig_src_port}(\(%{DATA:orig_src_user}\))? dst %{IPORHOST:orig_dst_ip}/%{INT:orig_dst_port}(\(%{DATA:orig_dst_user}\))?
+# ASA-4-338004, ASA-4-338008
+CISCOASA338004_338008 Dynamic Filter %{CISCO_ASA_ACTION:action} blacklisted %{WORD:protocol} traffic from %{DATA:src_interface}:%{IPORHOST:src_ip}(/%{INT:src_port})?( \(%{IPORHOST:src_mapped_ip}/%{INT:src_mapped_port}\))? to %{DATA:dst_interface}:%{IPORHOST:dst_ip}(/%{INT:dst_port})?( \(%{IPORHOST:dst_mapped_ip}/%{INT:dst_mapped_port}\))?, destination %{IPORHOST:blacklisted_ip} resolved from local list: %{IPORHOST:blacklisted_ip}/%{IPORHOST:blacklisted_netmask}, threat-level: %{DATA:threat_level}, category: %{DATA:category}
+# ASA-4-338008 Dynamic Filter %{CISCO_ASA_ACTION:action} blacklisted %{WORD:protocol} traffic from %{DATA:src_interface}:%{IPORHOST:src_ip}(/%{INT:src_port})?( \(%{IPORHOST:src_mapped_ip}/%{INT:src_mapped_port}\))? to %{DATA:dst_interface}:%{IPORHOST:dst_ip}(/%{INT:dst_port})?( \(%{IPORHOST:dst_mapped_ip}/%{INT:dst_mapped_port}\))?, destination %{IPORHOST:blacklisted_ip} resolved from local list: 221.204.186.0/255.255.255.0, threat-level: very-high, category: admin-added
+# ASA-4-400028
+CISCOASA400028 IDS:3042 TCP FIN only flags from %{IPORHOST:src_ip} to %{IPORHOST:dst_ip} on interface %{DATA:interface}
+# ASA-4-400037
+CISCOASA400037 IDS:6053 DNS all records request from %{IPORHOST:src_ip} to %{IPORHOST:dst_ip} on interface %{DATA:interface}
+# ASA-4-402117
+CISCOASA402117 %{WORD:protocol}: %{CISCO_ASA_ACTION:action} a non-IPSec packet \(protocol= %{WORD:orig_protocol}\) from %{IP:src_ip} to %{IP:dst_ip}
+# ASA-4-402119
+CISCOASA402119 %{WORD:protocol}: %{CISCO_ASA_ACTION:action} an %{WORD:orig_protocol} packet \(SPI= %{DATA:spi}, sequence number= %{DATA:seq_num}\) from %{IP:src_ip} \(user= %{DATA:user}\) to %{IP:dst_ip} that failed anti-replay checking
+# ASA-4-405001
+CISCOASA405001 %{WORD:protocol}: %{CISCO_ASA_ACTION:action} %{WORD:orig_protocol} %{CISCO_ASA_REASON:reason} from %{IPORHOST:src_ip}/%{MAC:src_mac} on interface %{GREEDYDATA:interface}
+# ASA-4-405104
+CISCOASA405104 %{WORD:protocol} message %{DATA:voip_message} received from %{IPORHOST:src_ip}(/%{INT:src_port})? %{IPORHOST:dst_ip}(/%{INT:dst_port})? before SETUP
+# ASA-4-419001
+CISCOASA419001 %{CISCO_ASA_ACTION:action} %{WORD:protocol} packet from %{DATA:src_interface}:%{IP:src_ip}/%{INT:src_port} to %{DATA:dst_interface}:%{IP:dst_ip}/%{INT:dst_port}, reason: %{GREEDYDATA:reason}
+# ASA-4-419002
+CISCOASA419002 %{CISCO_ASA_REASON:reason} from %{DATA:src_interface}:%{IPORHOST:src_ip}/%{INT:src_port} to %{DATA:dst_interface}:%{IPORHOST:dst_ip}/%{INT:dst_port} with different initial sequence number
+# ASA-4-500004
+CISCOASA500004 %{CISCO_ASA_REASON:reason} for protocol=%{WORD:protocol}, from %{IP:src_ip}/%{INT:src_port} to %{IP:dst_ip}/%{INT:dst_port}
+# ASA-4-507003
+CISCOASA507003 %{WORD:protocol} flow from %{DATA:src_interface}:%{IPORHOST:src_ip}/%{INT:src_port} to %{DATA:dst_interface}:%{IPORHOST:dst_ip}/%{INT:dst_port} %{CISCO_ASA_ACTION:action} by inspection engine, reason - %{DATA:reason}?\.
+# ASA-6-602303, ASA-6-602304
+CISCOASA602303_602304 %{WORD:protocol}: An %{CISCO_ASA_DIRECTION:direction} %{GREEDYDATA:tunnel_type} SA \(SPI= %{DATA:spi}\) between %{IP:src_ip} and %{IP:dst_ip} \(user= %{DATA:user}\) has been %{CISCO_ASA_ACTION:action}
+# ASA-6-607001
+CISCOASA607001 Pre-allocate %{GREEDYDATA:protocol} secondary channel for %{DATA:src_interface}:%{IPORHOST:src_ip}(/%{INT:src_port})? to %{DATA:dst_interface}:%{IPORHOST:dst_ip}(/%{INT:dst_port})? from %{DATA:voip_message} message
+# ASA-7-609001, ASA-7-609002
+CISCOASA609001_609002 %{CISCO_ASA_ACTION:action} local-host %{DATA:src_interface}:%{IPORHOST:src_ip}(?: duration %{TIME:duration})?
+# ASA-7-710001, ASA-7-710002, ASA-7-710003, ASA-7-710005, ASA-7-710006
+CISCOASA710001_710002_710003_710005_710006_710007 %{WORD:protocol} (?:request|access|keepalive) %{CISCO_ASA_ACTION:action} from %{IPORHOST:src_ip}/%{INT:src_port} to %{DATA:dst_interface}:%{IPORHOST:dst_ip}/%{DATA:dst_port}
+# ASA-6-713172
+CISCOASA713172 Group = %{GREEDYDATA:group}, IP = %{IP:src_ip}, Automatic NAT Detection Status:\s+Remote end\s*%{DATA:is_remote_natted}\s*behind a NAT device\s+This\s+end\s*%{DATA:is_local_natted}\s*behind a NAT device
+# ASA-7-713236
+CISCOASA713236 IP = %{IPORHOST:src_ip}, IKE_DECODE %{CISCO_ASA_ACTION} Message \(msgid=%{DATA:msgid}\) with payloads : %{GREEDYDATA:payload} total length : %{INT:length}
+# ASA-5-713257
+CISCOASA713257 Phase %{DATA} failure:  Mismatched attribute types for class %{DATA:vpn_class}:  Rcv'd: %{DATA:vpn_rcvd} Cfg'd: %{DATA:vpn_cfgd}
+# ASA-5-713904
+CISCOASA713904 IP = %{IPORHOST:src_ip}, Received encrypted packet with no matching SA, %{CISCO_ASA_ACTION:action}
+# ASA-7-713906
+CISCOASA713906 IKE Receiver: Packet received on %{IPORHOST:dst_ip}:%{INT:dst_port} from %{IPORHOST:src_ip}:%{INT:src_port}
+# ASA-7-715046
+CISCOASA715036_715046_715047_715075 Group = %{GREEDYDATA:group},(?: Username = %{DATA:user},)? IP = %{IP:src_ip},%{GREEDYDATA:vpn_action}
+# ASA-4-733100
+CISCOASA733100 \[\s*%{DATA:drop_type}\s*\] drop %{DATA:drop_rate_id} exceeded. Current burst rate is %{INT:drop_rate_current_burst} per second, max configured rate is %{INT:drop_rate_max_burst}; Current average rate is %{INT:drop_rate_current_avg} per second, max configured rate is %{INT:drop_rate_max_avg}; Cumulative total count is %{INT:drop_total_count}
+# ASA-6-734001
+CISCOASA734001 DAP: User %{DATA:user}, Addr %{IP:src_ip}, Connection %{DATA:protocol}: The following DAP records were selected for this connection: %{DATA:policy_id}
+# ASA-6-737006
+CISCOASA737006 IPAA: Local pool request succeeded for tunnel-group '%{DATA:vpn_group}'
+# ASA-6-737016
+CISCOASA737016 IPAA: Freeing local pool address %{IP:src_ip}
+# ASA-6-737026
+CISCOASA737026 IPAA: Client assigned %{IP:src_ip} from local pool
+# ASA-6-737029
+CISCOASA737029 IPAA: Added %{IP:src_ip} to standby
+# ASA-6-737031
+CISCOASA737031 IPAA: Removed %{IP:src_ip} from standby
+#== End Cisco ASA ==
