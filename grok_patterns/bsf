@@ -1,14 +1,11 @@
 # Barracuda Spam Firewall Grok Patterns
-BSF_PROCESS inbound/pass1|inbound/pass2|scan|outbound/smtp
+# Fields: action_id, client_ip, destination, delivery_detail, encryption, message_id, process, reason_extra, reason_id, recipient, score, sender, service, size, subject, unix_start_time, unix_end_time
+
 BSF_SERVICE RECV|SCAN|SEND
-BSF_SENDER %{NOTSPACE}|-
-BSF_RECIPIENT %{NOTSPACE}|-
-BSF_ENCRYPTION ENC|-
-BSF_INT %{INT}|-
-BSF_NUMBER %{NUMBER}|-
 
 # Common Particles
-BSF_SCAN %{BSF_PROCESS:process}: %{HOSTNAME:client_name}\[%{IP:client_ip}\] %{NOTSPACE:message_id} %{BSF_NUMBER:unix_start_time} %{BSF_NUMBER:unix_end_time} %{BSF_SERVICE:service} %{BSF_ENCRYPTION:encryption} %{BSF_SENDER:sender} %{BSF_RECIPIENT:recipient} %{BSF_NUMBER:score} %{BSF_INT:action_id} %{BSF_INT:reason_id} %{GREEDYDATA:reason_extra} SZ:%{BSF_INT:size} SUBJ:%{GREEDYDATA:subject}
-BSF_SEND %{BSF_PROCESS:process}: %{IP:client_ip} %{NOTSPACE:message_id} %{BSF_NUMBER:unix_start_time} %{BSF_NUMBER:unix_end_time} %{BSF_SERVICE:service} %{BSF_ENCRYPTION:encryption} %{BSF_INT:action_id} %{NOTSPACE:queue_id} %{GREEDYDATA:delivery_detail} #to#%{GREEDYDATA:destination}
-BSF_RECV_SCAN %{BSF_PROCESS:process}: %{HOSTNAME:client_name}\[%{IP:client_ip}\] %{NOTSPACE:message_id} %{BSF_NUMBER:unix_start_time} %{BSF_NUMBER:unix_end_time} %{BSF_SERVICE:service} %{BSF_ENCRYPTION:encryption} %{BSF_SENDER:sender} %{BSF_RECIPIENT:recipient} %{BSF_NUMBER:score} %{BSF_INT:action_id} %{BSF_INT:reason_id} %{GREEDYDATA:reason_extra} SZ:%{BSF_INT:size} SUBJ:%{GREEDYDATA:subject}
-BSF_RECV %{BSF_PROCESS:process}: %{HOSTNAME:client_name}\[%{IP:client_ip}\] %{NOTSPACE:message_id} %{BSF_NUMBER:unix_start_time} %{BSF_NUMBER:unix_end_time} %{BSF_SERVICE:service} %{BSF_SENDER:sender} %{BSF_RECIPIENT:recipient} %{BSF_INT:action_id} %{BSF_INT:reason_id} %{GREEDYDATA:reason_extra}
+BSF_SCAN %{NOTSPACE:process}: %{NOTSPACE:client_name}\[%{IP:client_ip}\] %{NOTSPACE:message_id} %{NOTSPACE:unix_start_time} %{NOTSPACE:unix_end_time} %{BSF_SERVICE:service} %{NOTSPACE:encryption} %{NOTSPACE:sender} %{NOTSPACE:recipient} %{NOTSPACE:score} %{NOTSPACE:action_id} %{NOTSPACE:reason_id} %{GREEDYDATA:reason_extra} SZ:%{NOTSPACE:size} SUBJ:%{GREEDYDATA:subject}
+BSF_SEND %{NOTSPACE:process}: %{IP:client_ip} %{NOTSPACE:message_id} %{NOTSPACE:unix_start_time} %{NOTSPACE:unix_end_time} %{BSF_SERVICE:service} %{NOTSPACE:encryption} %{NOTSPACE:action_id} %{NOTSPACE:queue_id} %{GREEDYDATA:delivery_detail} #to#%{GREEDYDATA:destination}
+BSF_RECV_SCAN %{NOTSPACE:process}: %{NOTSPACE:client_name}\[%{IP:client_ip}\] %{NOTSPACE:message_id} %{NOTSPACE:unix_start_time} %{NOTSPACE:unix_end_time} %{BSF_SERVICE:service} %{NOTSPACE:encryption} %{NOTSPACE:sender} %{NOTSPACE:recipient} %{NOTSPACE:score} %{NOTSPACE:action_id} %{NOTSPACE:reason_id} %{GREEDYDATA:reason_extra} SZ:%{NOTSPACE:size} SUBJ:%{GREEDYDATA:subject}
+BSF_RECV_SCAN_2 %{NOTSPACE:process}: \[%{IP:client_ip}\] %{NOTSPACE:message_id} %{NOTSPACE:unix_start_time} %{NOTSPACE:unix_end_time} %{BSF_SERVICE:service} %{NOTSPACE:encryption} %{NOTSPACE:sender} %{NOTSPACE:recipient} %{NOTSPACE:score} %{NOTSPACE:action_id} %{NOTSPACE:reason_id} %{GREEDYDATA:reason_extra} SZ:%{NOTSPACE:size} SUBJ:%{GREEDYDATA:subject}
+BSF_RECV %{NOTSPACE:process}: %{NOTSPACE:client_name}\[%{IP:client_ip}\] %{NOTSPACE:message_id} %{NOTSPACE:unix_start_time} %{NOTSPACE:unix_end_time} %{BSF_SERVICE:service} %{NOTSPACE:sender} %{NOTSPACE:recipient} %{NOTSPACE:action_id} %{NOTSPACE:reason_id} %{GREEDYDATA:reason_extra}
