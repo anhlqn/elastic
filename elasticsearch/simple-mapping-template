@@ -1,0 +1,42 @@
+{
+  "order": 0,
+  "template": "logstash-*",
+  "settings": {
+    "index": {      
+      "refresh_interval": "15s",      
+      "number_of_shards": "1",
+      "number_of_replicas": "1"
+    }
+  },
+  "mappings": {
+    "_default_": {
+      "include_in_all": false,
+      "dynamic_templates": [
+        {
+          "string_fields": {
+            "mapping": {
+              "index": "not_analyzed",
+              "omit_norms": true,
+              "type": "string"
+            },
+            "match_mapping_type": "string",
+            "match": "*"
+          }
+        }
+      ],
+      "properties": {        
+        "geoip": {
+          "dynamic": true,
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "geo_point",
+              "doc_values": true
+            }
+          }
+        }
+      }
+    }
+  },
+  "aliases": {}
+}
