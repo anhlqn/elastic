@@ -1,0 +1,101 @@
+---
+# Remember, leave a key empty if there is no value.  None will be a string,
+# not a Python "NoneType"
+#
+# Also remember that all examples have 'disable_action' set to True.  If you
+# want to use this action as a template, be sure to set this to False after
+# copying it.
+actions:
+  1:
+    action: allocation
+    description: >-
+      Apply shard allocation routing to 'include' 'tag=warm' for hot/warm node
+      setup for indices older than x, based on index_creation date.
+    options:
+      key: tag
+      value: warm
+      allocation_type: include
+      wait_for_completion: False
+      timeout_override:
+      continue_if_exception: True
+      ignore_empty_list: True
+      disable_action: False
+    filters:
+    - filtertype: closed
+      exclude: True
+    - filtertype: pattern
+      kind: prefix
+      value: '\.'
+      exclude: True
+    - filtertype: allocated
+      key: tag
+      value: hot
+      allocation_type: include
+      exclude: False
+    - filtertype: age
+      source: creation_date
+      direction: older
+      unit: months
+      unit_count: 1
+      exclude: False      
+  2:
+    action: close
+    description: >-
+      Close indices older than x.
+    options:
+      delete_aliases: False
+      timeout_override:
+      continue_if_exception: True
+      ignore_empty_list: True
+      disable_action: False
+    filters:    
+    - filtertype: closed
+      exclude: True
+    - filtertype: pattern
+      kind: prefix
+      value: '\.'
+      exclude: True
+    - filtertype: allocated
+      key: tag
+      value: warm
+      allocation_type: include
+      exclude: False  
+    - filtertype: age
+      source: creation_date
+      direction: older
+      unit: months
+      unit_count: 3
+      exclude: False 
+  3:
+    action: forcemerge
+    description: >-
+      forceMerge prefixed indices older than x (based on index
+      creation_date) to 1 segments per shard.  Delay 120 seconds between each
+      forceMerge operation to allow the cluster to quiesce.
+      This action will ignore indices already forceMerged to the same or fewer
+      number of segments per shard, so the 'forcemerged' filter is unneeded.
+    options:
+      max_num_segments: 1
+      delay: 120
+      timeout_override:
+      continue_if_exception: True
+      ignore_empty_list: True
+      disable_action: False
+    filters:    
+    - filtertype: closed
+      exclude: True
+    - filtertype: pattern
+      kind: prefix
+      value: '\.'
+      exclude: True
+    - filtertype: allocated
+      key: tag
+      value: warm
+      allocation_type: include
+      exclude: False
+    - filtertype: age
+      source: creation_date
+      direction: older
+      unit: days
+      unit_count: 35
+      exclude: False
