@@ -1,0 +1,84 @@
+{
+  "order": 0,
+  "template": "sonicwall-*",
+  "settings": {
+    "index": {      
+      "refresh_interval": "15s",      
+      "number_of_shards": "1",
+      "number_of_replicas": "1"
+    }
+  },
+  "mappings": {
+    "_default_": {
+      "include_in_all": false,
+      "dynamic_templates": [
+        {
+          "string_fields": {
+            "mapping": {
+              "index": "not_analyzed",
+              "omit_norms": true,
+              "type": "string"
+            },
+            "match_mapping_type": "string",
+            "match": "*"
+          }
+        }
+      ],
+      "properties": {
+        "cdur": {
+          "type": "long"
+        },
+        "dstname": {
+          "include_in_all": true,
+          "index": "not_analyzed",
+          "type": "string"
+        },
+        "srcip": {
+          "include_in_all": true,
+          "index": "not_analyzed",
+          "type": "string"
+        },
+        "rpkt": {
+          "type": "long"
+        },
+        "spkt": {
+          "type": "long"
+        },
+        "srcname": {
+          "include_in_all": true,
+          "index": "not_analyzed",
+          "type": "string"
+        },
+        "usr": {
+          "include_in_all": true,
+          "index": "not_analyzed",
+          "type": "string"
+        },
+        "arg": {
+          "index": "analyzed",
+          "type": "string"
+        },
+        "dstip_geoip": {
+          "dynamic": "true",
+          "properties": {
+            "location": {
+              "type": "geo_point"
+            }
+          }
+        },
+        "rcvd": {
+          "type": "long"
+        },
+        "dstip": {
+          "include_in_all": true,
+          "index": "not_analyzed",
+          "type": "string"
+        },
+        "sent": {
+          "type": "long"
+        }
+      }
+    }
+  },
+  "aliases": {}
+}
