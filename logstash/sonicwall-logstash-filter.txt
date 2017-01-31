@@ -1,91 +1,97 @@
-if [type] == "sonicwall" {
+filter {
+    if [type] == "sonicwall" {
 
-    kv {
-        exclude_keys => [ "<129>id", "<132>id", "<133>id","<134>id", "af_polid", "af_service", "app", "appid", "code", "fw", "m", "op", "sn" ]
-    }
-    
-    date {
-        match => [ "time", "yyyy-MM-dd HH:mm:ss z", "yyyy-MM-dd HH:mm:ss" ]
-    }
-    
-    if [src] {
-        grok {
-            match => { 
-                "src" => [
-                    "%{IP:srcip}:%{INT:srcport}:%{DATA:srcint}:%{GREEDYDATA:srcname}",
-                    "%{IP:srcip}:%{INT:srcport}:%{DATA:srcint}",
-                    "%{IP:srcip}::%{DATA:srcint}",
-                    ":%{INT:srcport}"
-                ]  
+        kv {
+            exclude_keys => [ "<129>id", "<132>id", "<133>id","<134>id", "af_polid", "af_service", "app", "appid", "code", "fw", "m", "op", "sn" ]
+        }
+
+        date {
+            match => [ "time", "yyyy-MM-dd HH:mm:ss z", "yyyy-MM-dd HH:mm:ss" ]
+        }
+
+        if [src] {
+            grok {
+                match => { 
+                    "src" => [
+                        "%{IP:srcip}:%{INT:srcport}:%{DATA:srcint}:%{GREEDYDATA:srcname}",
+                        "%{IP:srcip}:%{INT:srcport}:%{DATA:srcint}",
+                        "%{IP:srcip}::%{DATA:srcint}",
+                        ":%{INT:srcport}"
+                    ]  
+                }
             }
         }
-    }
-    
-    if [dst] {
-        grok {
-            match => { 
-                "dst" => [ 
-                    "%{IP:dstip}:%{INT:dstport}:%{DATA:dstint}:%{GREEDYDATA:dstinfo}",
-                    "%{IP:dstip}:%{INT:dstport}:%{DATA:dstint}",
-                    "%{IP:dstip}::%{DATA:dstint}",
-                    ":%{INT:dstport}"
-                ]
+
+        if [dst] {
+            grok {
+                match => { 
+                    "dst" => [ 
+                        "%{IP:dstip}:%{INT:dstport}:%{DATA:dstint}:%{GREEDYDATA:dstinfo}",
+                        "%{IP:dstip}:%{INT:dstport}:%{DATA:dstint}",
+                        "%{IP:dstip}::%{DATA:dstint}",
+                        ":%{INT:dstport}"
+                    ]
+                }
             }
         }
-    }
-    
-    # Sanitize fields with \r after recent firmware update
-    mutate {
-        gsub => [
-            "sent", "\r", "",
-            "rcvd", "\r", "",
-            "cdur", "\r", "",
-            "spkt", "\r", "",
-            "rpkt", "\r", "",
-            "proto", "\r", ""
-        ]
-    }
-    
-    # Assign network tags based on IP
-    if [dstip] {
-        cidr {
-            add_tag => ["dstip-private"]
-            address => ["%{dstip}"]
-            network => ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
-        }                
-        
-        # Parse GeoIP info
-        if "dstip-private" not in [tags] {
-            geoip {
-                source => "dstip"
-                target => "dstip_geoip"
-                fields => ["country_name", "real_region_name", "city_name", "location"]
+
+        # Sanitize fields with \r after recent firmware update
+        mutate {
+            gsub => [
+                "sent", "\r", "",
+                "rcvd", "\r", "",
+                "cdur", "\r", "",
+                "spkt", "\r", "",
+                "rpkt", "\r", "",
+                "proto", "\r", ""
+            ]
+        }
+
+        # Assign network tags based on IP
+        if [dstip] {
+            cidr {
+                add_tag => ["dstip-private"]
+                address => ["%{dstip}"]
+                network => ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
+            }                
+
+            # Parse GeoIP info
+            if "dstip-private" not in [tags] {
+                geoip {
+                    source => "dstip"
+                    target => "dstip_geoip"
+                    fields => ["country_name", "real_region_name", "city_name", "location"]
+                }
             }
         }
+
+        # Replace srcname with srcip if srcname does not exist
+        if ![srcname] and [srcip] {
+            mutate {
+                replace => { "srcname" => "%{srcip}" }
+            }
+        }	
+
+        # Replace dstname with dstinfo or dstip if dstname does not exist
+        if ![dstname] and [dstinfo] {
+            mutate {
+                replace => { "dstname" => "%{dstinfo}" }
+            }
+        } else if ![dstname] and [dstip] {
+            mutate {
+                replace => { "dstname" => "%{dstip}" }
+            }
+        }	
+
+        mutate {
+            lowercase => [ "msg", "appName", "sess", "fw_action", "srcint", "dstint", "Category"]
+            remove_field => [ "src", "dst", "dstinfo", "message", "time" ]
+        }	    		
     }
-    
-    # Replace srcname with srcip if srcname does not exist
-    if ![srcname] and [srcip] {
-        mutate {
-            replace => { "srcname" => "%{srcip}" }
-        }
-    }	
-    
-    # Replace dstname with dstinfo or dstip if dstname does not exist
-    if ![dstname] and [dstinfo] {
-        mutate {
-            replace => { "dstname" => "%{dstinfo}" }
-        }
-    } else if ![dstname] and [dstip] {
-        mutate {
-            replace => { "dstname" => "%{dstip}" }
-        }
-    }	
-    
-    mutate {
-        lowercase => [ "msg", "appName", "sess", "fw_action", "srcint", "dstint", "Category"]
-        remove_field => [ "src", "dst", "dstinfo", "message", "time" ]
-        
-    }	    
-		
+}
+output {
+    elasticsearch {
+        host => "localhost:9200"
+        index => "sonicwall-%{+YYYY.MM.DD}"
+    }
 }
