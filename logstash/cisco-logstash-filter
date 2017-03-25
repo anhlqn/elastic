@@ -1,0 +1,74 @@
+if [type] == "cisco" {
+		# --- Cisco Firewall
+			grok {
+				patterns_dir => [ "grok_patterns" ]
+				match => { 
+					"message" => [
+						"%{CISCOFW104001}",
+						"%{CISCOFW104002}",
+						"%{CISCOFW104003}",
+						"%{CISCOFW104004}",
+						"%{CISCOFW105003}",
+						"%{CISCOFW105004}",
+						"%{CISCOFW105005}",
+						"%{CISCOFW105008}",
+						"%{CISCOFW105009}",
+						"%{CISCOFW106001}",
+						"%{CISCOFW106006_106007_106010}",
+						"%{CISCOFW106014}",
+						"%{CISCOFW106015}",
+						"%{CISCOFW106021}",
+						"%{CISCOFW106023}",
+						"%{CISCOFW106100}",
+						"%{CISCOFW110002}",
+						"%{CISCOASA111008}",
+						"%{CISCOASA111009}",
+						"%{CISCOASA111010}",
+						"%{CISCOASA113004}",
+						"%{CISCOASA113005}",
+						"%{CISCOASA302004}",
+						"%{CISCOFW302010}",
+						"%{CISCOFW302013_302014_302015_302016}",
+						"%{CISCOFW302020_302021}",
+						"%{CISCOASA305006}",
+						"%{CISCOFW305011}",
+						"%{CISCOASA305013}",
+						"%{CISCOFW313001_313004_313008}",
+						"%{CISCOFW313005}",                    
+						"%{CISCOFW321001}",
+						"%{CISCOASA338004_338008}",
+						"%{CISCOASA400028}",
+						"%{CISCOASA400037}",
+						"%{CISCOFW402117}",
+						"%{CISCOFW402119}",
+						"%{CISCOASA405001}",
+						"%{CISCOASA405104}",
+						"%{CISCOFW419001}",
+						"%{CISCOFW419002}",
+						"%{CISCOFW500004}",
+						"%{CISCOASA507003}",
+						"%{CISCOFW602303_602304}",
+						"%{CISCOASA607001}",
+						"%{CISCOASA609001_609002}",
+						"%{CISCOFW710001_710002_710003_710005_710006}",
+						"%{CISCOFW713172}",
+						"%{CISCOASA713236}",
+						"%{CISCOASA713257}",
+						"%{CISCOASA713904}",
+						"%{CISCOASA713906}",
+						"%{CISCOASA715036_715046_715047_715075}",
+						"%{CISCOFW733100}",
+						"%{CISCOASA734001}",
+						"%{CISCOASA737006}",
+						"%{CISCOASA737016}",
+						"%{CISCOASA737026}",
+						"%{CISCOASA737029}",
+						"%{CISCOASA737031}"
+						]
+					}
+			}
+		
+			# Parse syslog_date
+			date {
+				match => ["syslog_date", "yyyy-MM-dd HH:mm:ss"]
+			}
