@@ -4,7 +4,7 @@
 - https://nxlog.co/products/nxlog-community-edition/download.
 
 # Process
-1. Powershell retrieves a list of computers from AD (or a text file) and does
+1. Powershell retrieves a list of computers from AD (or a text file) and does:
   * get software or process info from remote computers.
   * add additional info.
   * convert data to JSON and write to local file.
