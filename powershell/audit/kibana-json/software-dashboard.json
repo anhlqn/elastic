@@ -1,0 +1,21 @@
+[
+  {
+    "_id": "software-Inventory",
+    "_type": "dashboard",
+    "_source": {
+      "title": "software Inventory",
+      "hits": 0,
+      "description": "",
+      "panelsJSON": "[\n  {\n    \"col\": 4,\n    \"id\": \"software-Version-table\",\n    \"panelIndex\": 1,\n    \"row\": 4,\n    \"size_x\": 5,\n    \"size_y\": 5,\n    \"type\": \"visualization\"\n  },\n  {\n    \"col\": 1,\n    \"id\": \"software-Version-pie\",\n    \"panelIndex\": 2,\n    \"row\": 4,\n    \"size_x\": 3,\n    \"size_y\": 5,\n    \"type\": \"visualization\"\n  },\n  {\n    \"col\": 9,\n    \"id\": \"audit-Hostname\",\n    \"panelIndex\": 3,\n    \"row\": 4,\n    \"size_x\": 2,\n    \"size_y\": 5,\n    \"type\": \"visualization\"\n  },\n  {\n    \"col\": 1,\n    \"columns\": [\n      \"hostname\",\n      \"DisplayName\",\n      \"DisplayVersion\",\n      \"InstallDate\",\n      \"InstallLocation\",\n      \"InstallSource\",\n      \"ModifyPath\"\n    ],\n    \"id\": \"software\",\n    \"panelIndex\": 4,\n    \"row\": 9,\n    \"size_x\": 12,\n    \"size_y\": 5,\n    \"sort\": [\n      \"_score\",\n      \"desc\"\n    ],\n    \"type\": \"search\"\n  },\n  {\n    \"col\": 11,\n    \"id\": \"software-Metrics\",\n    \"panelIndex\": 5,\n    \"row\": 4,\n    \"size_x\": 2,\n    \"size_y\": 5,\n    \"type\": \"visualization\"\n  },\n  {\n    \"col\": 1,\n    \"id\": \"audit-Host-Over-Time\",\n    \"panelIndex\": 6,\n    \"row\": 1,\n    \"size_x\": 6,\n    \"size_y\": 3,\n    \"type\": \"visualization\"\n  },\n  {\n    \"col\": 7,\n    \"id\": \"software-Software-Over-Time\",\n    \"panelIndex\": 7,\n    \"row\": 1,\n    \"size_x\": 6,\n    \"size_y\": 3,\n    \"type\": \"visualization\"\n  }\n]",
+      "optionsJSON": "{\n  \"darkTheme\": false\n}",
+      "uiStateJSON": "{}",
+      "version": 1,
+      "timeRestore": true,
+      "timeTo": "now",
+      "timeFrom": "now/M",
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\n  \"filter\": [\n    {\n      \"$state\": {\n        \"store\": \"appState\"\n      },\n      \"meta\": {\n        \"alias\": null,\n        \"disabled\": false,\n        \"index\": \"es-*\",\n        \"key\": \"category\",\n        \"negate\": false,\n        \"value\": \"software\"\n      },\n      \"query\": {\n        \"match\": {\n          \"category\": {\n            \"query\": \"software\",\n            \"type\": \"phrase\"\n          }\n        }\n      }\n    },\n    {\n      \"query\": {\n        \"query_string\": {\n          \"analyze_wildcard\": true,\n          \"query\": \"*\"\n        }\n      }\n    }\n  ]\n}"
+      }
+    }
+  }
+]

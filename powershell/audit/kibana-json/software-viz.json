@@ -1,0 +1,86 @@
+[
+  {
+    "_id": "software-Metrics",
+    "_type": "visualization",
+    "_source": {
+      "title": "software Metrics",
+      "visState": "{\"title\":\"software Metrics\",\"type\":\"metric\",\"params\":{\"handleNoResults\":true,\"fontSize\":60},\"aggs\":[{\"id\":\"2\",\"type\":\"cardinality\",\"schema\":\"metric\",\"params\":{\"field\":\"hostname\",\"customLabel\":\"Host\"}},{\"id\":\"1\",\"type\":\"cardinality\",\"schema\":\"metric\",\"params\":{\"field\":\"DisplayName\",\"customLabel\":\"Software\"}}],\"listeners\":{}}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"es-*\",\"query\":{\"query_string\":{\"query\":\"*\",\"analyze_wildcard\":true}},\"filter\":[{\"meta\":{\"negate\":false,\"index\":\"es-*\",\"key\":\"type\",\"value\":\"software\",\"disabled\":false,\"alias\":null},\"query\":{\"match\":{\"category\":{\"query\":\"software\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"globalState\"}}]}"
+      }
+    }
+  },
+  {
+    "_id": "software-Version-pie",
+    "_type": "visualization",
+    "_source": {
+      "title": "software Version pie",
+      "visState": "{\"title\":\"software Version pie\",\"type\":\"pie\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"isDonut\":false},\"aggs\":[{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"DisplayName\",\"size\":50,\"order\":\"desc\",\"orderBy\":\"1\"}},{\"id\":\"3\",\"type\":\"terms\",\"schema\":\"segment\",\"params\":{\"field\":\"DisplayVersion\",\"size\":50,\"order\":\"desc\",\"orderBy\":\"1\"}}],\"listeners\":{}}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"es-*\",\"query\":{\"query_string\":{\"query\":\"*\",\"analyze_wildcard\":true}},\"filter\":[{\"$state\":{\"store\":\"globalState\"},\"meta\":{\"alias\":null,\"disabled\":false,\"index\":\"es-*\",\"key\":\"type\",\"negate\":false,\"value\":\"software\"},\"query\":{\"match\":{\"category\":{\"query\":\"software\",\"type\":\"phrase\"}}}}]}"
+      }
+    }
+  },
+  {
+    "_id": "software-Software-Over-Time",
+    "_type": "visualization",
+    "_source": {
+      "title": "software Software Over Time",
+      "visState": "{\"title\":\"software Software Over Time\",\"type\":\"histogram\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"scale\":\"linear\",\"mode\":\"stacked\",\"times\":[],\"addTimeMarker\":false,\"defaultYExtents\":false,\"setYExtents\":false,\"yAxis\":{}},\"aggs\":[{\"id\":\"1\",\"type\":\"cardinality\",\"schema\":\"metric\",\"params\":{\"field\":\"DisplayName\",\"customLabel\":\"Software\"}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"@timestamp\",\"interval\":\"auto\",\"customInterval\":\"2h\",\"min_doc_count\":1,\"extended_bounds\":{}}}],\"listeners\":{}}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"es-*\",\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}},\"filter\":[{\"meta\":{\"negate\":false,\"index\":\"es-*\",\"key\":\"category\",\"value\":\"software\",\"disabled\":false,\"alias\":null},\"query\":{\"match\":{\"category\":{\"query\":\"software\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    }
+  },
+  {
+    "_id": "software-Version-table",
+    "_type": "visualization",
+    "_source": {
+      "title": "software Version table",
+      "visState": "{\"title\":\"software Version table\",\"type\":\"table\",\"params\":{\"perPage\":100,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false},\"aggs\":[{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"DisplayName\",\"size\":500,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Software\"}},{\"id\":\"3\",\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"DisplayVersion\",\"size\":1000,\"order\":\"desc\",\"orderBy\":\"1\",\"customLabel\":\"Version\"}}],\"listeners\":{}}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"es-*\",\"query\":{\"query_string\":{\"query\":\"*\",\"analyze_wildcard\":true}},\"filter\":[{\"meta\":{\"negate\":false,\"index\":\"es-*\",\"key\":\"category\",\"value\":\"software\",\"disabled\":false,\"alias\":null},\"query\":{\"match\":{\"category\":{\"query\":\"software\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    }
+  },
+  {
+    "_id": "audit-Host-Over-Time",
+    "_type": "visualization",
+    "_source": {
+      "title": "audit Host Over Time",
+      "visState": "{\"title\":\"inventory Host Over Time\",\"type\":\"histogram\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"scale\":\"linear\",\"mode\":\"stacked\",\"times\":[],\"addTimeMarker\":false,\"defaultYExtents\":false,\"setYExtents\":false,\"yAxis\":{}},\"aggs\":[{\"id\":\"1\",\"type\":\"cardinality\",\"schema\":\"metric\",\"params\":{\"field\":\"hostname\",\"customLabel\":\"hostname\"}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"@timestamp\",\"interval\":\"auto\",\"customInterval\":\"2h\",\"min_doc_count\":1,\"extended_bounds\":{}}}],\"listeners\":{}}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"es-*\",\"query\":{\"query_string\":{\"query\":\"*\",\"analyze_wildcard\":true}},\"filter\":[{\"meta\":{\"negate\":false,\"index\":\"es-*\",\"key\":\"type\",\"value\":\"audit\",\"disabled\":false,\"alias\":null},\"query\":{\"match\":{\"type\":{\"query\":\"audit\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    }
+  },
+  {
+    "_id": "audit-Hostname",
+    "_type": "visualization",
+    "_source": {
+      "title": "audit Hostname",
+      "visState": "{\"title\":\"inventory Hostname\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false},\"aggs\":[{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{\"customLabel\":\"hostname\"}},{\"id\":\"2\",\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"hostname\",\"size\":500,\"order\":\"desc\",\"orderBy\":\"1\"}}],\"listeners\":{}}",
+      "uiStateJSON": "{}",
+      "description": "",
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"es-*\",\"query\":{\"query_string\":{\"query\":\"*\",\"analyze_wildcard\":true}},\"filter\":[{\"meta\":{\"negate\":false,\"index\":\"es-*\",\"key\":\"type\",\"value\":\"audit\",\"disabled\":false,\"alias\":null},\"query\":{\"match\":{\"type\":{\"query\":\"audit\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    }
+  }
+]

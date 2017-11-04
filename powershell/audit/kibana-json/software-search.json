@@ -1,0 +1,28 @@
+[
+  {
+    "_id": "software",
+    "_type": "search",
+    "_source": {
+      "title": "software",
+      "description": "",
+      "hits": 0,
+      "columns": [
+        "hostname",
+        "DisplayName",
+        "DisplayVersion",
+        "InstallDate",
+        "InstallLocation",
+        "InstallSource",
+        "ModifyPath"
+      ],
+      "sort": [
+        "_score",
+        "desc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"es-*\",\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}},\"filter\":[{\"meta\":{\"negate\":false,\"index\":\"es-*\",\"key\":\"category\",\"value\":\"software\",\"disabled\":false,\"alias\":null},\"query\":{\"match\":{\"category\":{\"query\":\"software\",\"type\":\"phrase\"}}},\"$state\":{\"store\":\"appState\"}}],\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}},\"require_field_match\":false,\"fragment_size\":2147483647}}"
+      }
+    }
+  }
+]
