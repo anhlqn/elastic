@@ -8,5 +8,5 @@
   * get software or process info from remote computers.
   * add additional info.
   * convert data to JSON and write to local file.
-3. nxlog picks up data from local folder and send to Logstash.
-4. Logstash does further processing and indexes to Elasticsearch.
+2. nxlog picks up data from local folder and send to Logstash.
+3. Logstash does further processing and indexes to Elasticsearch.
