@@ -1,0 +1,2 @@
+- Create a schedule task to run *Invoke-Script.ps1* every minute to execute other scripts.
+- Test-RunInterval is used to control the actual execution interval of scripts
