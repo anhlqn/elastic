@@ -21,7 +21,7 @@ Function Write-JSON {
 Function Get-ComputerName {
     param(
         [Parameter(Mandatory=$true)]
-        [string]$DN
+        [string]$DN,
         [string]$network = "10.0.0"
     )
 
