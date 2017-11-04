@@ -1,0 +1,58 @@
+{
+  "order": 0,
+  "template": "audit-*",
+  "settings": {
+    "index": {      
+      "refresh_interval": "5s",      
+      "number_of_shards": "1",
+      "number_of_replicas": "1"
+    }
+  },
+  "mappings": {
+    "_default_": {
+      "include_in_all": false,
+      "dynamic_templates": [
+        {
+          "string_fields": {
+            "mapping": {
+              "include_in_all": true,
+              "ignore_above": 32000,
+              "index": "not_analyzed",
+              "omit_norms": true,
+              "type": "string"
+            },
+            "match_mapping_type": "string"
+          }
+        }
+      ],
+      "properties": {
+        "process_id": {
+          "include_in_all": false,
+          "type": "integer"
+        },
+        "hostname": {
+          "include_in_all": true,
+          "index": "not_analyzed",
+          "type": "string"
+        },
+        "@timestamp": {
+          "format": "strict_date_optional_time||epoch_millis",
+          "type": "date"
+        },
+        "process_memory": {
+          "include_in_all": false,
+          "type": "float"
+        },
+        "process_cpu": {
+          "include_in_all": false,
+          "type": "float"
+        },
+        "process_start_time": {
+          "format": "strict_date_optional_time||epoch_millis",
+          "type": "date"
+        }
+      }
+    }
+  },
+  "aliases": {}
+}
